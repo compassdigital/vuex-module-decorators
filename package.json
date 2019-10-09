@@ -1,5 +1,5 @@
 {
-  "name": "vuex-module-decorators",
+  "name": "@compassdigital/vuex-module-decorators",
   "version": "0.10.0",
   "description": "Decorators to make class-like Vuex modules",
   "main": "dist/cjs/index.js",
