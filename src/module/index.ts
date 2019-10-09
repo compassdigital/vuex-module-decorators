@@ -49,6 +49,8 @@ function moduleDecoratorFactory<S>(moduleOptions: ModuleOptions) {
         value: (store?: Store<any>) => {
           let statics = {}
           modOpt.store = modOpt.store || store
+          /* tslint:disable */ 
+          /* tslint:enable */ 
           if (!modOpt.store) {
             throw new Error(`ERR_STORE_NOT_PROVIDED: To use getModule(), either the module
             should be decorated with store in decorator, i.e. @Module({store: store}) or
@@ -80,10 +82,20 @@ function moduleDecoratorFactory<S>(moduleOptions: ModuleOptions) {
       if (!modOpt.name) {
         throw new Error('Name of module not provided in decorator options')
       }
-      modOpt.store.registerModule(
-        modOpt.name, // TODO: Handle nested modules too in future
-        module
-      )
+      // this will normal throw errors because the defintion does not expose _modules
+      // temporary fix until hasModule call is made
+      // https://github.com/championswimmer/vuex-module-decorators/issues/131
+      // https://github.com/vuejs/vuex/issues/833
+      if (modOpt.store._modules.root._children[modOpt.name]) {
+        const modules: any = {}
+        modules[modOpt.name] = module;
+        modOpt.store.hotUpdate({ modules });
+      } else {
+        modOpt.store.registerModule(
+          modOpt.name, // TODO: Handle nested modules too in future
+          module
+        )
+      }
     }
     return constructor
   }
